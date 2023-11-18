@@ -1,12 +1,15 @@
 package com.upgrad.ecommerce.controllers;
 
 import com.upgrad.ecommerce.dto.AddressDTO;
+import com.upgrad.ecommerce.models.User;
+import com.upgrad.ecommerce.security.services.UserDetailsImpl;
 import com.upgrad.ecommerce.services.AddressService;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -26,7 +29,7 @@ public class AddressResource {
 
     @GetMapping
     @PreAuthorize("hasAuthority('USER') or hasAuthority('ADMIN')")
-    public ResponseEntity<List<AddressDTO>> getAllAddresss() {
+    public ResponseEntity<List<AddressDTO>> getAllAddress() {
         return ResponseEntity.ok(addressService.findAll());
     }
 
@@ -40,6 +43,9 @@ public class AddressResource {
     @ApiResponse(responseCode = "201")
     @PreAuthorize("hasAuthority('USER') or hasAuthority('ADMIN')")
     public ResponseEntity<String> createAddress(@RequestBody @Valid final AddressDTO addressDTO) {
+        UserDetailsImpl user = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        addressDTO.setUser(user.getId());
+
         return new ResponseEntity<>(addressService.create(addressDTO), HttpStatus.CREATED);
     }
 

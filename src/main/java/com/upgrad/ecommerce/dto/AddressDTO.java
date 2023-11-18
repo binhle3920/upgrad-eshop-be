@@ -39,6 +39,5 @@ public class AddressDTO {
     @Size(max = 255)
     private String zipcode;
 
-    @NotNull
     private String user;
 }
